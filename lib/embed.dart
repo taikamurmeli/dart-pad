@@ -466,6 +466,9 @@ class Embed {
           _handleExecute();
         }
       }
+      if (type == 'getCode') {
+        window.parent.postMessage(context.dartSource, '*');
+      }
     });
   }
 
