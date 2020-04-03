@@ -457,9 +457,14 @@ class Embed {
           _handleExecute();
           break;
         case 'sourceCode':
+
           lastInjectedSourceCode =
           Map<String, String>.from(data['sourceCode'] as Map);
           _resetCode();
+
+          if (data['format'] != null && data['format'] == true) {
+            _format();
+          }
 
           if (autoRunEnabled) {
             _handleExecute();
