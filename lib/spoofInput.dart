@@ -63,7 +63,7 @@ class SpoofInput {
     'null','typedef','on','var','const',
     'finally','operator','void','continue','part','covariant',
     'rethrow','with','default','get','return','yield','deferred','hide','set',
-    'do','implements',
+    'do','implements','toString',
     // Can have parenthesis after:
     'catch','else','switch','await','super','for','while','if','assert',
   ];
