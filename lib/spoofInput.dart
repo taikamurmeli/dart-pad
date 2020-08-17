@@ -69,15 +69,18 @@ class SpoofInput {
   ];
 
   final foundFunctions = [];
+
+  // Make all non-async functions async in case they call stdin
   dartSource = dartSource.replaceAllMapped(
-      RegExp(r'\b((\w+)\s*\(.*\))\s*{', multiLine: true), (match) {
-    if (keywords.contains(match.group(2))) {
+      RegExp(r'(\b[\w<>]+)?\s*\b((\w+)\s*\(.*\))\s*{', multiLine: true), (match) {
+    if (keywords.contains(match.group(3))) {
       return match.group(0);
     }
-    foundFunctions.add(match.group(2));
-    return '${match.group(1)} async {';
+    foundFunctions.add(match.group(3));
+    final typeDef = match.group(1) != null ?
+    'Future<${match.group(1)}> ' : '';
+    return '$typeDef${match.group(2)} async {';
   });
-
   // add await for stdin calls
   dartSource = dartSource.replaceAllMapped(
       RegExp(r'\b(stdin\.)', multiLine: true), (match) {
