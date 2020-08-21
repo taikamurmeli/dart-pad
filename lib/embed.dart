@@ -842,7 +842,7 @@ class Embed {
     if (editorIsBusy) {
       return;
     }
-
+    executionSvc.tearDown();
     if (context.dartSource.isEmpty) {
       dialog.showOk(
           'No code to execute',
