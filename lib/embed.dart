@@ -32,7 +32,7 @@ import 'sharing/gists.dart';
 import 'src/util.dart';
 import 'util/keymap.dart';
 import 'util/query_params.dart';
-import 'spoofInput.dart';
+import 'dart_source_expansion.dart';
 
 const int defaultSplitterWidth = 6;
 
