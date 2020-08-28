@@ -869,7 +869,7 @@ class Embed {
 
     void _handleError(e, st) {
       const compileErrorMessage = 'Error: could not compile code';
-      final errorMessage = e.toString() == "Instance of 'minified:h_'" ? compileErrorMessage : '$compileErrorMessage\n$e';
+      final errorMessage = e.toString().startsWith("Instance of 'minified:") ? compileErrorMessage : '$compileErrorMessage\n$e';
       consoleExpandController.showOutput(errorMessage, error: true);
       print(st);
     }
