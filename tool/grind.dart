@@ -151,6 +151,8 @@ build() {
   var newEmbedInlineFile = _buildDir.join('scripts/embed_inline.dart.js');
   log('$newEmbedInlineFile compiled to ${_printSize(newEmbedInlineFile)}');
 
+  var newEmbedInputFile = _buildDir.join('scripts/embed_input.dart.js');
+  log('$newEmbedInputFile compiled to ${_printSize(newEmbedInputFile)}');
   // Remove .dart files.
   var count = 0;
 
@@ -171,6 +173,7 @@ build() {
   vulcanize('embed-html.html');
   vulcanize('embed-flutter.html');
   vulcanize('embed-inline.html');
+  vulcanize('embed-input.html');
 }
 
 void copyPackageResources(String packageName, Directory destDir) {
