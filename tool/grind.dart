@@ -12,6 +12,7 @@ import 'dart:io';
 import 'package:git/git.dart';
 import 'package:grinder/grinder.dart';
 import 'package:yaml/yaml.dart' as yaml;
+import 'dart:math';
 
 final FilePath _buildDir = FilePath('build');
 final FilePath _pkgDir = FilePath('third_party/pkg');
@@ -139,20 +140,23 @@ build() {
     log('${testFile.path} compiled to ${_printSize(testFile)}');
   }
 
-  var newEmbedDartFile = _buildDir.join('scripts/embed_dart.dart.js');
-  log('$newEmbedDartFile compiled to ${_printSize(newEmbedDartFile)}');
+  final cacheBusterId = generateRandomCacheBuster();
+  [
+    'scripts/embed_dart.dart.js',
+    'scripts/embed_flutter.dart.js',
+    'scripts/embed_html.dart.js',
+    'scripts/embed_inline.dart.js',
+    'scripts/embed_input.dart.js',
+  ].forEach(
+      (filepath) {
+        final dartFile = _buildDir.join(filepath);
+        final updatedFileName = dartFile.asFile.renameSync(dartFile.path
+            .replaceFirst('.', '-$cacheBusterId.'));
+        var updatedFilePath = FilePath(updatedFileName.path);
+        log('$updatedFilePath compiled to ${_printSize(updatedFilePath)}');
+      }
+  );
 
-  var newEmbedFlutterFile = _buildDir.join('scripts/embed_flutter.dart.js');
-  log('$newEmbedFlutterFile compiled to ${_printSize(newEmbedFlutterFile)}');
-
-  var newEmbedHtmlFile = _buildDir.join('scripts/embed_html.dart.js');
-  log('$newEmbedHtmlFile compiled to ${_printSize(newEmbedHtmlFile)}');
-
-  var newEmbedInlineFile = _buildDir.join('scripts/embed_inline.dart.js');
-  log('$newEmbedInlineFile compiled to ${_printSize(newEmbedInlineFile)}');
-
-  var newEmbedInputFile = _buildDir.join('scripts/embed_input.dart.js');
-  log('$newEmbedInputFile compiled to ${_printSize(newEmbedInputFile)}');
   // Remove .dart files.
   var count = 0;
 
@@ -168,12 +172,27 @@ build() {
 
   // Run vulcanize.
   // Imports vulcanized, not inlined for IE support
-  vulcanize('index.html');
-  vulcanize('embed-dart.html');
-  vulcanize('embed-html.html');
-  vulcanize('embed-flutter.html');
-  vulcanize('embed-inline.html');
-  vulcanize('embed-input.html');
+  ['index.html',
+  'embed-dart.html',
+  'embed-html.html',
+  'embed-flutter.html',
+  'embed-inline.html',
+  'embed-input.html'].forEach(
+      (filepath) {
+        final htmlFile = _buildDir.join(filepath);
+        final htmlContent = htmlFile.asFile.readAsStringSync();
+        final updatedHtmlContent = htmlContent
+            .replaceAllMapped(RegExp('embed_(.+).dart.js'),
+                (match) => 'embed_${match.group(1)}-$cacheBusterId.dart.js');
+        htmlFile.asFile.writeAsString(updatedHtmlContent);
+        vulcanize(filepath);
+      });
+}
+
+String generateRandomCacheBuster() {
+  final random = Random();
+  var values = List<int>.generate(16, (i) => random.nextInt(256));
+  return base64UrlEncode(values).replaceAll('=', '');
 }
 
 void copyPackageResources(String packageName, Directory destDir) {
