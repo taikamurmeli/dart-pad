@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:html' hide Document, Console;
 import 'dart:math' as math;
 
+import 'package:dart_pad/parent_logger.dart';
 import 'package:dart_pad/elements/material_tab_controller.dart';
 import 'package:mdc_web/mdc_web.dart';
 import 'package:split/split.dart';
@@ -141,6 +142,9 @@ class Embed {
   bool _editorIsBusy = true;
 
   bool get editorIsBusy => _editorIsBusy;
+
+  String iFrameId;
+  ParentLogger parentLogger;
 
   /// Toggles the state of several UI components based on whether the editor is
   /// too busy to handle code changes, execute/reset requests, etc.
@@ -454,6 +458,10 @@ class Embed {
 
 
       switch (data['type']) {
+        case 'iFrameId':
+          iFrameId = data['iFrameId'].toString();
+          parentLogger = ParentLogger(iFrameId);
+          break;
         case 'execute':
           _handleExecute();
           break;
@@ -471,21 +479,24 @@ class Embed {
             _handleExecute();
           }
           break;
-        case 'getAllContent':
+        case 'getCode':
           window.parent.postMessage({
-            'code': context.dartSource,
-            'html': context.htmlSource,
-            'css': context.cssSource
+            'type': 'code',
+            'code': {
+              'dart': context.dartSource,
+              'html': context.htmlSource,
+              'css': context.cssSource
+            }
           }, '*');
           break;
-        case 'getCode':
-          window.parent.postMessage(context.dartSource, '*');
+        case 'getDart':
+          window.parent.postMessage({'type': 'dart', 'dart': context.dartSource}, '*');
           break;
         case 'getHtml':
-          window.parent.postMessage(context.htmlSource, '*');
+          window.parent.postMessage({'type': 'html', 'html': context.htmlSource}, '*');
           break;
         case 'getCss':
-          window.parent.postMessage(context.cssSource, '*');
+          window.parent.postMessage({'type': 'css', 'css': context.cssSource}, '*');
           break;
       }
     });
@@ -842,6 +853,10 @@ class Embed {
     if (editorIsBusy) {
       return;
     }
+    if (parentLogger != null) {
+      parentLogger.logCodeExecution();
+    }
+
     executionSvc.tearDown();
     if (context.dartSource.isEmpty) {
       dialog.showOk(
@@ -1016,6 +1031,9 @@ class Embed {
   void _format() async {
     var originalSource = userCodeEditor.document.value;
     var input = SourceRequest()..source = originalSource;
+    if (parentLogger != null) {
+      parentLogger.logCodeFormat();
+    }
 
     try {
       formatButton.disabled = true;
