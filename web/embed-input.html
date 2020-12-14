@@ -33,6 +33,9 @@ BSD-style license that can be found in the LICENSE file. -->
     <script src="packages/codemirror/addon/scroll/simplescrollbars.js" defer></script>
     <script src="packages/split/split.min.js" defer></script>
 
+    <!-- check that local storage is enabled -->
+    <script src="scripts/check_localstorage.js"></script>
+
     <script defer src="scripts/embed_input.dart.js"></script>
     <script defer src="scripts/polymerpatch.js"></script>
     <script type="text/javascript" src="dark_mode.js"></script>
@@ -94,15 +97,16 @@ BSD-style license that can be found in the LICENSE file. -->
         </div>
     </nav>
     <div class="nav-buttons">
+        <button id="install-button" class="mdc-button">Install SDK</button>
         <button id="show-hint" class="mdc-button">Hint</button>
         <button id="format-code" class="mdc-button">Format</button>
-        <button id="reload-gist" class="mdc-button">Reset code</button>
+        <button id="reload-gist" class="mdc-button">Reset Code</button>
         <button id="execute" class="mdc-button mdc-button--raised">
             <i class="material-icons mdc-button__icon">play_arrow</i>
             Run
         </button>
         <div class="position-relative text-right pr-2">
-            <button id="menu-button" class="mdc-icon-button material-icons" hidden>more_vert</button>
+            <button id="menu-button" class="mdc-icon-button material-icons">more_vert</button>
             <div id="main-menu" class="mdc-menu mdc-menu-surface">
                 <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
                     <li id="show-test-menu-item" class="mdc-list-item" role="menuitem">
@@ -116,6 +120,12 @@ BSD-style license that can be found in the LICENSE file. -->
                             <i class="material-icons mdc-select__icon" tabindex="-1" role="button">check</i>
                         </span>
                         <span class="mdc-list-item__text">Editable test/solution</span>
+                    </li>
+                    <li id="toggle-null-safety-menu-item" class="mdc-list-item" role="menuitem">
+                        <span id="toggle-null-safety-checkmark" class="mdc-list-item__graphic hide">
+                            <i class="material-icons mdc-select__icon" tabindex="-1" role="button">check</i>
+                        </span>
+                        <span class="mdc-list-item__text">Null Safety</span>
                     </li>
                 </ul>
             </div>
@@ -138,21 +148,19 @@ BSD-style license that can be found in the LICENSE file. -->
             <button id="open-in-dartpad" title="Full screen" class="mdc-icon-button material-icons">launch</button>
         </div>
     </div>
-    <div id="console-view" hidden class="custom-scrollbar">
+    <div id="console-view" hidden>
         <div id="console-output-header">
             <span class="view-label">Console <span id="unread-console-counter" class="Counter" hidden></span></span>
         </div>
-        <div id="console-output-container" class="custom-scrollbar">
-
-        </div>
+        <div id="console-output-container" class="custom-scrollbar"></div>
         <div id="web-output" class="console-spoof-input-container">
-            <iframe id="frame" sandbox="allow-scripts allow-same-origin" class="flex-auto">
-            </iframe>
+            <iframe id="frame" sandbox="allow-scripts allow-same-origin" class="flex-auto"></iframe>
         </div>
     </div>
 </section>
 <footer flex layout horizontal class="footer">
-    <div id="issues-message"></div>
+    <div id="feature-message" class="info-message"></div>
+    <div id="issues-message" class="info-message"></div>
     <button id="issues-toggle" class="mdc-button mdc-button--dense mdc-button--outlined" hidden></button>
 </footer>
 
