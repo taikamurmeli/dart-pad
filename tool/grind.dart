@@ -116,7 +116,7 @@ serveCustomBackend() async {
 
     var fileContents = file.readAsStringSync();
     fileContents =
-        fileContents.replaceAll(RegExp('https://dart-services.*\.appspot\.com'), serverUrl);
+        fileContents.replaceAll(RegExp('https://dart-services(beta)?(-0)?\.appspot\.com'), serverUrl);
     file.writeAsStringSync(fileContents);
   }
 
